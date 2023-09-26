@@ -10,7 +10,8 @@ def get_ip():
 def prompt():
     print('enter options')
     print('---------------')
-    print('my ip: display my ip')
+    print('info: display my ip')
     print('connect: make a new connection')
     print('list: list all connections')
     print('exit: terminate program')
+

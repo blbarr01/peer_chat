@@ -12,6 +12,7 @@ def prompt():
     print('---------------')
     print('info: display my ip')
     print('connect: make a new connection')
+    print('message: send a message to a peer')
     print('list: list all connections')
     print('exit: terminate program')
 

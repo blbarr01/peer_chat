@@ -6,4 +6,4 @@ class connection():
         self.sock = sock_tup
 
     def __repr__(self) -> str:
-        return f"id: {self.id} \n address: {self.sock[0]} \n port: {self.sock[1]} " 
+        return f"\n id: {self.id} \n address: {self.sock[0]} \n port: {self.sock[1]}\n " 

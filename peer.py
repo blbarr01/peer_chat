@@ -55,9 +55,17 @@ def send_message():
 def server_thread(addr, port):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((addr, port))
+        s.listen()
         print(f'listening of port {port}')
-
-
+        p_sock, p_addr = s.accept()
+        full_msg = ''
+        with p_sock:
+            print(f'connection from {p_addr}')
+            while True:
+                partial = p_sock.recv(16)
+                if len(partial) <= 0: break 
+                full_msg += partial.decode()
+            print(full_msg)
 
 if __name__ == "__main__":
     port = args.port

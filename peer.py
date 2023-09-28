@@ -1,10 +1,11 @@
 import argparse 
 import socket
+import threading
 from connection import *
 from utils import * 
 
 parser = argparse.ArgumentParser(description='enter the port number for you\'re peers to connect to')
-parser.add_argument('--port', '-p', type=int)
+parser.add_argument('--port', '-p', type=int, default=9000)
 
 args = parser.parse_args()
 global con_id
@@ -14,14 +15,18 @@ connections = set()
 
 def add_conn():
     ip = input("enter target IP address: ")
-    port = input("enter target port: ")
+    port = int(input("enter target port: "))
     sock_tup = (ip, port)
     global con_id
     connections.add(connection(con_id, sock_tup))
     con_id +=1 
 
 def create_socket(peer):
-    pass
+    msg = input("enter your message > ")
+    print(peer.sock)
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect(peer.sock)
+        s.sendall(msg.encode('utf-8'))
 
 
 def send_message():
@@ -47,12 +52,22 @@ def send_message():
     else:
         create_socket(pp)
 
+def server_thread(addr, port):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind((addr, port))
+        print(f'listening of port {port}')
+
+
 
 if __name__ == "__main__":
     port = args.port
     ip = get_ip()
     my_info= (ip, port)
     
+    serv_t = threading.Thread(target=server_thread, args=(ip, port))
+    serv_t.daemon = True
+    serv_t.start()
+
     while True:
         prompt()
         sel = input('> ')

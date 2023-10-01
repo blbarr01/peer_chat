@@ -6,7 +6,7 @@ from utils import *
 
 parser = argparse.ArgumentParser(description='enter the port number for you\'re peers to connect to')
 parser.add_argument('--port', '-p', type=int, default=9000)
-
+parser.add_argument('--alias', '-a', type=str, default='anonymous')
 args = parser.parse_args()
 global con_id
 con_id = 1
@@ -16,13 +16,20 @@ connections = set()
 def add_conn():
     ip = input("enter target IP address: ")
     port = int(input("enter target port: "))
-    sock_tup = (ip, port)
+    sock_tup = (ip, port) 
+    sel = input('would you like to enter an alias? Y or N > ').capitalize()
     global con_id
-    connections.add(connection(con_id, sock_tup))
+    if(sel == 'Y'):
+        alias = input('enter alias > ')
+        connections.add(connection(con_id, sock_tup, alias))
+    else:   
+        connections.add(connection(con_id, sock_tup))
     con_id +=1 
 
 def create_socket(peer):
-    msg = input("enter your message > ")
+    msg = f'message from {args.alias}\n\
+    -----------------------------------\n'
+    msg += input("enter your message > ")
     print(peer.sock)
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect(peer.sock)
@@ -53,24 +60,26 @@ def send_message():
         create_socket(pp)
 
 def server_thread(addr, port):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind((addr, port))
-        s.listen()
-        print(f'listening of port {port}')
-        p_sock, p_addr = s.accept()
-        full_msg = ''
-        with p_sock:
-            print(f'connection from {p_addr}')
-            while True:
-                partial = p_sock.recv(16)
-                if len(partial) <= 0: break 
-                full_msg += partial.decode()
-            print(full_msg)
+    print(f'listening on port {port}')
+    while True:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.bind((addr, port))
+            s.listen()
+            p_sock, p_addr = s.accept()
+            full_msg = ''
+            with p_sock:
+                print(f'connection from {p_addr}')
+                while True:
+                    partial = p_sock.recv(16)
+                    if len(partial) <= 0: break 
+                    full_msg += partial.decode()
+                full_msg += '\n\n'
+                print(full_msg)
 
 if __name__ == "__main__":
     port = args.port
     ip = get_ip()
-    my_info= (ip, port)
+    my_info= (ip, port, args.alias)
     
     serv_t = threading.Thread(target=server_thread, args=(ip, port))
     serv_t.daemon = True
@@ -94,4 +103,6 @@ if __name__ == "__main__":
             case 'list':
                 print('here are the connections')
                 print(connections)
+            case _:
+                print('input not understood')
 

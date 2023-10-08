@@ -14,4 +14,5 @@ two arguements may be provided:
   a port number 
   alias defaults to anonymous 
   port defaults to 9000
-the program will request the local IPv4 address of the user and any peers the user wishes to connect to. 
+the program will request the local IPv4 address and port# of any peers the user wishes to connect to 
+and stores these connections for the user to use. 
